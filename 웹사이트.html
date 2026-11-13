@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>세러가드 · 물리치료사를 위한 AI 자세 분석</title>
+<title>세러가드 · 치료사 자세 부담 분석</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
   color-scheme: light;
@@ -99,215 +99,16 @@ button:focus-visible,.filebtn:focus-within{outline:3px solid var(--teal);outline
 footer{margin-top:24px;font-size:.85rem;color:var(--muted)}
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
 
-/* ---------- 포트폴리오 ---------- */
-:root{--bg:#ECECE8;--surface:#FFFFFF;--ink:#171717;--muted:#6F7271;--line:#E2E2DE;--teal:#2C6E66;--teal-ink:#fff;--soft:#F5F5F2}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0E100F;--surface:#191C1B;--ink:#ECECE9;--muted:#A2A6A4;--line:#2C302E;--teal:#5FB3A8;--teal-ink:#0E100F;--soft:#222625}}
-:root[data-theme="dark"]{--bg:#0E100F;--surface:#191C1B;--ink:#ECECE9;--muted:#A2A6A4;--line:#2C302E;--teal:#5FB3A8;--teal-ink:#0E100F;--soft:#222625}
-body{font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:break-word;line-height:1.75;background:var(--bg)}
-.book{max-width:1120px;margin:0 auto;padding:28px 16px 60px;display:flex;flex-direction:column;gap:28px}
-.page{position:relative;background:var(--surface);border-radius:6px;padding:64px 72px 72px;min-height:min(640px,auto)}
-@media (min-width:900px){.page{min-height:630px}}
-@media (max-width:700px){.page{padding:40px 24px 56px}}
-.pno{position:absolute;right:28px;bottom:20px;font-size:.85rem;color:var(--muted)}
-.ptag{position:absolute;left:72px;bottom:20px;font-size:.85rem;color:var(--muted)}
-@media (max-width:700px){.ptag{left:24px}}
-.page h2{font-size:clamp(1.8rem,3.6vw,2.6rem);font-weight:800;letter-spacing:-0.02em;line-height:1.25;margin:0 0 8px}
-.page .sub{color:var(--muted);font-weight:300;font-size:1.1rem;margin:0 0 36px;max-width:60ch}
-.page p{max-width:66ch}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
-@media (max-width:860px){.two{grid-template-columns:1fr;gap:28px}}
-
-/* 표지 */
-.cover{display:grid;grid-template-columns:1fr;gap:48px;align-items:end;min-height:min(80vh,720px)}
-@media (max-width:860px){.cover{grid-template-columns:1fr}}
-.cover .year{color:var(--muted);margin:0 0 auto}
-.cover h1{font-size:clamp(3rem,9vw,6.4rem);font-weight:800;line-height:1;letter-spacing:-0.04em;margin:0}
-.cover .who{font-size:1.25rem;margin:22px 0 0}
-.cover .who span{display:block;color:var(--muted);font-weight:300;font-size:1.05rem;margin-top:4px}
-.photo{aspect-ratio:3/4;background:var(--soft);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--muted);text-align:center;font-size:.95rem}
-.coverleft{display:flex;flex-direction:column;justify-content:space-between;height:100%;min-height:420px}
-
-/* 목차 */
-.toc{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
-.toc li{display:grid;grid-template-columns:80px 1fr auto;gap:16px;align-items:baseline;padding:20px 0;border-bottom:1px solid var(--line)}
-.toc .n{font-size:1.6rem;font-weight:800;color:var(--line)}
-.toc a{color:var(--ink);text-decoration:none;font-size:1.25rem;font-weight:500}
-.toc a:hover,.toc a:focus-visible{color:var(--teal)}
-.toc .d{color:var(--muted);font-size:.95rem}
-@media (max-width:600px){.toc li{grid-template-columns:50px 1fr}.toc .d{grid-column:2}}
-
-/* 자기소개·역량 */
-.kv{display:grid;grid-template-columns:110px 1fr;gap:10px 18px;margin:0}
-.kv dt{color:var(--muted)}
-.kv dd{margin:0}
-.skill{padding:18px 0;border-top:1px solid var(--line)}
-.skill h3{margin:0 0 4px;font-size:1.1rem}
-.skill p{margin:0;color:var(--muted)}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.chips span{background:var(--soft);padding:4px 12px;border-radius:999px;font-size:.9rem}
-
-/* 프로젝트 */
-.projhead{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
-@media (max-width:860px){.projhead{grid-template-columns:1fr}}
-.projhead .big{font-size:clamp(2.6rem,6vw,4.4rem);font-weight:800;line-height:1.05;letter-spacing:-0.03em;margin:0}
-.fig{background:var(--soft);border-radius:4px;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center}
-.fig svg{width:70%}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:8px 0 30px}
-@media (max-width:760px){.facts{grid-template-columns:1fr}}
-.fact{background:var(--soft);border-radius:4px;padding:22px}
-.fact b{display:block;font-size:2.6rem;font-weight:800;line-height:1.1}
-.fact small{display:block;color:var(--muted);margin-top:6px}
-.quote{border-left:3px solid var(--ink);padding-left:20px;font-weight:300;font-size:1.2rem;max-width:60ch;margin:0}
-.grid4{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-@media (max-width:700px){.grid4{grid-template-columns:1fr}}
-.card{background:var(--soft);border-radius:4px;padding:22px}
-.card h3{margin:0 0 6px;font-size:1.1rem}
-.card p{margin:0;color:var(--muted)}
-.flow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 28px}
-.flow span{background:var(--soft);border-radius:4px;padding:10px 14px;font-weight:500}
-.flow i{font-style:normal;color:var(--muted)}
-.tbl{overflow-x:auto}
-.tbl table{border-collapse:collapse;width:100%;min-width:560px}
-.tbl th,.tbl td{border-bottom:1px solid var(--line);padding:12px 10px;text-align:left}
-.tbl th{color:var(--muted);font-weight:500}
-.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:middle}
-.timeline2{list-style:none;margin:0;padding:0;border-left:2px solid var(--line)}
-.timeline2 li{position:relative;padding:0 0 22px 26px}
-.timeline2 li::before{content:"";position:absolute;left:-7px;top:9px;width:12px;height:12px;border-radius:50%;background:var(--surface);border:2px solid var(--ink)}
-.timeline2 li.done::before{background:var(--ink)}
-.timeline2 b{display:block}
-.timeline2 span{color:var(--muted)}
-ol.plain{padding-left:1.3em;margin:0}
-ol.plain li{margin-bottom:10px}
-.refs{font-size:.9rem;color:var(--muted);padding-left:1.3em}
-.refs li{margin-bottom:6px}
-.contact{font-size:1.3rem}
-.contact dd{font-weight:500}
-
-/* 시연 페이지 안 앱 */
-.page.demo{padding-left:40px;padding-right:40px}
-@media (max-width:700px){.page.demo{padding-left:16px;padding-right:16px}}
-.page.demo .wrap.app{max-width:none;padding:0}
-.page.demo h1.apptitle{font-size:1.3rem}
-.part,.timeline,.report,.stage{border-radius:4px}
-button,.filebtn{border-radius:4px}
-@media print{body{background:#fff}.page{break-after:page}}
-
-.print-only{display:none}
-@media print{
-  @page{size:297mm 210mm;margin:0}
-  html,body{background:#fff!important}
-  body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .screen-only{display:none!important}
-  .print-only{display:block!important}
-  .book{max-width:none;padding:0!important;gap:0;display:block}
-  .page{width:297mm;height:210mm;min-height:0!important;border-radius:0;padding:18mm 22mm 20mm;overflow:hidden;break-after:page;page-break-after:always;outline:none!important}
-  .cover{min-height:0;height:100%}.coverleft{min-height:0}
-  .ptag{left:22mm;bottom:9mm}.pno{right:12mm;bottom:9mm}
-  .fig{max-height:120mm}.page h2{font-size:28pt}
-}
-
-/* ---------- AI 활용 페이지 ---------- */
-.aitwo{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:26px}
-@media (max-width:760px){.aitwo{grid-template-columns:1fr}}
-.aibox{background:var(--soft);border-radius:4px;padding:20px 22px}
-.aibox .lbl{font-size:.85rem;color:var(--muted)}
-.aibox h3{margin:2px 0 8px;font-size:1.25rem}
-.aibox p{margin:0;color:var(--muted)}
-.chat{display:flex;flex-direction:column;gap:12px}
-.chat .row{display:grid;grid-template-columns:minmax(0,1fr) 28px minmax(0,1fr);gap:10px;align-items:center}
-@media (max-width:700px){.chat .row{grid-template-columns:1fr}.chat .arrow{display:none}}
-.chat .me{background:var(--ink);color:var(--surface);border-radius:14px 14px 4px 14px;padding:12px 16px;font-weight:500}
-.chat .ai{background:var(--soft);border-radius:14px 14px 14px 4px;padding:12px 16px;color:var(--ink)}
-.chat .arrow{color:var(--muted);text-align:center}
-.lesson{margin-top:22px;font-size:1.1rem;font-weight:500}
-@media print{.page.addon h2{font-size:24pt}.chat .me,.chat .ai{padding:8px 12px}.chat{gap:8px}}
-
-
 .guide{position:absolute;left:12px;right:12px;bottom:12px;background:rgba(0,0,0,.72);color:#fff;padding:12px 16px;border-radius:10px;font-weight:700;font-size:1.1rem;text-align:center;display:none;z-index:3}
 .guide.show{display:block}
 .guide.ok{background:rgba(62,155,95,.92)}
 .alertbar{z-index:4}
 </style>
-<style>
-/* ---------- 웹사이트 배치 ---------- */
-body{background:var(--surface)}
-.site-nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--surface);border-bottom:1px solid var(--line)}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:31;background:var(--surface)}
-.site-nav .in{max-width:1120px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:22px;overflow-x:auto;white-space:nowrap}
-.site-nav .brand{font-weight:800;color:var(--ink);text-decoration:none;margin-right:auto}
-.site-nav a{color:var(--muted);text-decoration:none;font-size:.95rem}
-.site-nav a:hover,.site-nav a:focus-visible{color:var(--ink)}
-.site-nav a.go{background:var(--teal);color:var(--teal-ink);padding:8px 14px;border-radius:4px;font-weight:700}
-.w{max-width:1120px;margin:0 auto;padding:0 20px}
-.hero2{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center;padding:96px 0 80px}
-@media (max-width:860px){.hero2{grid-template-columns:1fr;padding:48px 0}}
-.hero2 .kick{color:var(--muted);margin:0 0 14px}
-.hero2 h1{font-size:clamp(2.3rem,5.6vw,4.2rem);font-weight:800;line-height:1.12;letter-spacing:-0.03em;margin:0}
-.hero2 .lead{color:var(--muted);font-weight:300;font-size:1.15rem;margin:22px 0 0;max-width:52ch}
-.hero2 .cta{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:30px}
-.hero2 .cta a{background:var(--teal);color:var(--teal-ink);text-decoration:none;font-weight:700;padding:14px 26px;border-radius:4px}
-.hero2 .cta span{color:var(--muted)}
-.hero2 .fig{aspect-ratio:1/1}
-.ws{padding:84px 0;border-top:1px solid var(--line)}
-@media (max-width:700px){.ws{padding:56px 0}}
-.ws .lab{color:var(--teal);font-weight:700;margin:0 0 10px;letter-spacing:.02em}
-.ws h2{font-size:clamp(1.8rem,3.6vw,2.6rem);font-weight:800;letter-spacing:-0.02em;line-height:1.25;margin:0 0 8px}
-.ws .sub{color:var(--muted);font-weight:300;font-size:1.1rem;margin:0 0 32px}
-.ws.alt{background:var(--soft);border-top:none}
-.ws.alt .fact,.ws.alt .card,.ws.alt .aibox,.ws.alt .flow span{background:var(--surface)}
-#try .wrap.app{max-width:none;padding:0}
-#try h1.apptitle{display:none}
-#try header{margin-bottom:12px}
-.foot{padding:56px 0 72px;border-top:1px solid var(--line)}
-.foot .refs{font-size:.88rem}
-</style>
 </head>
 <body>
-<nav class="site-nav" aria-label="메뉴"><div class="in">
-<a class="brand" href="#top">세러가드</a>
-<a href="#problem">문제</a><a href="#solution">기능</a><a href="#ai">AI 기술</a><a href="#criteria">판정 기준</a><a href="#why">왜 AI인가</a><a href="#maker">만든 사람</a>
-<a class="go" href="#try">직접 써보기</a></div></nav>
-<main>
-<header class="w hero2" id="top"><div>
-<p class="kick">물리치료사를 위한 AI 자세 분석 도구</p>
-<h1>환자를 치료하는 사람의 몸은 누가 지킬까요</h1>
-<p class="lead">세러가드는 카메라 한 대로 물리치료사의 허리·목·어깨·손목 자세를 실시간으로 분석하고, 위험한 자세가 이어지면 바로 알려주는 AI 도구입니다. 설치 없이 브라우저에서 바로 쓸 수 있습니다.</p>
-<div class="cta"><a href="#try">지금 써보기</a><span>전지윤 · 안동과학대학교 물리치료학과</span></div></div>
-<div class="fig"><svg viewBox="0 0 200 200" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-<rect x="96" y="118" width="96" height="10" rx="2" fill="var(--line)"/><path d="M100 128 L100 178 M186 128 L186 178" stroke="var(--line)" stroke-width="5"/>
-<path d="M50 108 L46 150 L40 186" stroke="var(--muted)" stroke-width="6"/><path d="M50 108 L70 146 L74 186" stroke="var(--muted)" stroke-width="6"/>
-<path d="M50 108 L92 70" stroke="var(--bad)" stroke-width="9"/><path d="M92 70 L108 60" stroke="var(--warn)" stroke-width="7"/>
-<circle cx="116" cy="56" r="10" fill="var(--ink)"/><path d="M90 72 L108 100 L124 112" stroke="var(--ok)" stroke-width="7"/>
-<circle cx="50" cy="108" r="4" fill="var(--ink)"/><circle cx="92" cy="70" r="4" fill="var(--ink)"/><circle cx="108" cy="100" r="4" fill="var(--ink)"/>
-<path d="M50 108 L50 60" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="4 5"/><path d="M50 76 A32 32 0 0 1 75 86" stroke="var(--bad)" stroke-width="2"/>
-<text x="58" y="70" font-size="12" font-weight="700" fill="var(--bad)" font-family="Noto Sans KR, sans-serif">62°</text></svg></div></header>
-<section class="ws alt" id="problem"><div class="w"><p class="lab">문제</p><h2>치료사는 인지 하지 못합니다</h2><p class="sub">도수치료, 환자 들기·옮기기를 하루에도 수십 번 반복하는 직업</p>
-<div class="facts"><div class="fact"><b>75.3%</b>업무 관련 근골격계 질환 빈도<small>2025년 체계적 문헌고찰</small></div>
-<div class="fact"><b>55.0%</b>허리 통증, 부위 중 1위<small>목 36.2%, 어깨 25.5% 순</small></div>
-<div class="fact"><b>50%</b>일을 시작한 지 5년 안에 겪는 비율<small>Vieira 외, 2016</small></div></div>
-<p class="quote">올바른 신체 사용법을 알고 있어도 부상은 막아지지 않았습니다. (Milhem 외, 2016) 바쁜 치료 중에는 자기 자세를 알아차리기 어렵기 때문입니다.</p><p class="quote">실습생분들이나 임상에 계신 연차가 낮은 물리치료사분들은 올바른 손목지지법이나 허리에 부담이 가지 않는 방법을 알고 있더라도 환자에 따라 유순하게 대처하는 과정에서 무의식적인 신체 부분 부담이 발생할수있다고 생각했습니다. 그래서 필요한 것은 교육이 아니라 치료하는 순간의 실시간 피드백이라고 판단했습니다.</p></div></section>
-<section class="ws" id="solution"><div class="w"><p class="lab">기능</p><h2>간편하게 사용할 수있는 AI도구&nbsp;</h2><p class="sub">치료실 한쪽에 노트북이나 휴대폰을 두면 끝</p><div class="grid4">
-<div class="card"><h3>실시간 측정</h3><p>몸 위에 뼈대 선이 그려지고 부위별 각도가 숫자로 표시됩니다.</p></div>
-<div class="card"><h3>색으로 위험 표시</h3><p>초록은 안전, 노랑은 주의, 빨강은 위험. 멀리서도 한눈에 보입니다.</p></div>
-<div class="card"><h3>행동을 알려주는 음성 경고</h3><p>빨강이 3초 넘게 이어지면 “침대 높이를 올리세요”처럼 구체적으로 말해 줍니다.</p></div>
-<div class="card"><h3>세션 리포트</h3><p>치료가 끝나면 부위별 위험 시간 비율과 개선 제안을 보여줍니다.</p></div></div></div></section>
-<section class="ws alt" id="ai"><div class="w"><p class="lab">AI 기술</p><h2>이 도구의 AI는 무엇을 하나</h2><p class="sub">사람 눈 대신, 영상 속 몸의 움직임을 읽는 딥러닝</p>
-<div class="aitwo"><div class="aibox"><span class="lbl">AI가 보는 것</span><h3>관절 33개의 위치</h3><p>구글의 자세 추정 딥러닝 모델(BlazePose 기반 MediaPipe Pose)이 영상의 매 장면마다 어깨, 팔꿈치, 손목, 골반 등 관절 33개의 좌표와 신뢰도를 찾아냅니다.</p></div>
-<div class="aibox"><span class="lbl">어디서 돌아가나</span><h3>기기 안에서 바로 (온디바이스 AI)</h3><p>서버로 영상을 보내지 않고 노트북이나 휴대폰 브라우저 안에서 AI가 실시간으로 계산합니다. 환자가 화면에 찍혀도 영상이 밖으로 나가지 않습니다.</p></div></div>
-<div class="flow"><span>영상 한 장면</span><i>›</i><span>딥러닝 관절 인식</span><i>›</i><span>관절 각도 계산</span><i>›</i><span>흔들림 보정</span><i>›</i><span>REBA·RULA 기준 판정</span><i>›</i><span>지속 시간 판단 후 경고</span></div>
-<p>AI가 찾은 관절 위치를 바탕으로 각도를 계산하고, 산업 인간공학 기준에 따라 위험도를 판정합니다. 순간적인 값의 흔들림은 걸러내고, 위험한 자세가 3초 넘게 이어질 때만 경고해 치료를 방해하지 않습니다.</p>
-</div></section>
-<section class="ws" id="criteria"><div class="w"><p class="lab">판정 기준</p><h2>AI가 자세를 아는 방법</h2><p class="sub">모든 계산은 브라우저 안에서, 영상은 밖으로 나가지 않습니다</p>
-<div class="flow"><span>카메라 영상</span><i>›</i><span>관절 33개 인식</span><i>›</i><span>각도 계산</span><i>›</i><span>REBA·RULA 판정</span><i>›</i><span>경고와 리포트</span></div>
-<div class="tbl"><table><tbody><tr><th>부위</th><th><span class="dot" style="background:var(--ok)"></span>안전</th><th><span class="dot" style="background:var(--warn)"></span>주의</th><th><span class="dot" style="background:var(--bad)"></span>위험</th><th>근거</th></tr>
-<tr><td>허리 숙임</td><td>20° 미만</td><td>20~60°</td><td>60° 초과</td><td>REBA 몸통</td></tr>
-<tr><td>목 굽힘</td><td>20° 미만</td><td>20~45°</td><td>45° 초과</td><td>REBA 목 응용</td></tr>
-<tr><td>어깨 들림</td><td>45° 미만</td><td>45~90°</td><td>90° 초과</td><td>REBA 위팔</td></tr>
-<tr><td>손목 꺾임</td><td>15° 미만</td><td>15~30°</td><td>30° 초과</td><td>RULA 손목 응용</td></tr></tbody></table></div></div></section>
-<section class="ws alt" id="try"><div class="w"><p class="lab">직접 써보기</p><h2>직접 써보기</h2><p class="sub">“카메라 켜기”를 누르고 옆으로 서서 허리를 숙여 보세요. 카메라가 없으면 영상 파일도 됩니다.</p><div class="wrap app">
+<div class="wrap">
   <header>
-    <h1 class="apptitle">세러가드 시연<small>환자를 돌보는 치료사의 허리·목·어깨·손목 부담을 실시간으로 봅니다</small></h1>
+    <h1>세러가드<small>환자를 돌보는 치료사의 허리·목·어깨·손목 부담을 실시간으로 봅니다</small></h1>
     <div class="controls">
       <button class="primary" id="btnCam">카메라 켜기</button>
       <label class="filebtn">영상 파일로 분석<input type="file" id="fileIn" accept="video/*"></label>
@@ -356,42 +157,6 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     판정 기준은 산업현장 인간공학 평가법 REBA·RULA의 각도 구간을 응용했습니다. 카메라는 자세(각도)만 보고 실제 힘의 크기는 측정하지 않으므로, 결과는 진단이 아닌 자세 기반 위험 추정입니다. 영상은 이 기기 안에서만 처리되며 어디에도 전송·저장되지 않습니다.
   </footer>
 </div>
-
-</div></section>
-<section class="ws" id="why"><div class="w"><p class="lab">왜 AI인가</p><h2>AI 측정도구로써의 이점&nbsp;</h2><p class="sub"><br></p>
-<div class="tbl"><table><tbody><tr><th>비교</th><th>전문가 관찰 평가 (REBA 등)</th><th>몸에 붙이는 센서</th><th>세러가드 (AI 카메라)</th></tr>
-<tr><td>평가 방식</td><td>사람이 보고 점수표로 직접 채점</td><td>센서가 기울기 측정</td><td>AI가 영상에서 자동 판정</td></tr>
-<tr><td>평가 시점</td><td>특정 순간만</td><td>계속</td><td>계속, 매 장면</td></tr>
-<tr><td>즉시 경고</td><td>불가</td><td>기기에 따라 가능</td><td>화면 색과 음성으로 즉시</td></tr>
-<tr><td>필요한 장비</td><td>평가 전문가</td><td>부위마다 센서 부착</td><td>카메라 하나 (노트북·휴대폰)</td></tr>
-<tr><td>치료 방해</td><td>없음</td><td>센서 착용 불편</td><td>몸에 아무것도 붙이지 않음</td></tr></tbody></table></div>
-<p class="lesson">전문가의 눈을 AI가 대신해, 모든 치료 시간 동안 끊김 없이 지켜봅니다.</p>
-</div></section>
-<section class="ws alt" id="maker"><div class="w"><p class="lab">만든 사람</p><div class="two"><div><h2><br></h2><h2><span style="font-size: clamp(1.8rem, 3.6vw, 2.6rem); letter-spacing: -0.02em;">치료사의&nbsp;</span><span style="font-size: clamp(1.8rem, 3.6vw, 2.6rem); letter-spacing: -0.02em;">안전에&nbsp;</span></h2><h2>초점을 두다</h2></div><div>물리치료학과에 입학하고 나서 처음으로 간 재활 센터 현장 견학에서, 실습 중 손목관절이나 허리에 가해지는 부담을 느끼지 못한 채 환자의 재활에만 몰두하게 되면 정작 치료사 자신의 손목이나 허리는 어떻게 지켜야 할까 생각했습니다. 그렇게 관심이 생겨 관련 자료를 찾아보던 중, 물리치료사 네 명 중 세 명이 업무로 인한 근골격계 질환을 겪는다는 연구 결과를 알게 되었습니다. 환자의 몸을 가장 잘 아는 사람들이 정작 자기 몸은 돌보기 어렵다는 점이 마음에 남았고, 앞으로 제가 일할 현장의 문제를 기술로 먼저 풀어 보고 싶었습니다.</div><div><br></div><div><br></div><div><br></div><div><br></div><div><br></div></div><div style="margin-top:40px"><div class="two"><div><h2>아이디어는<br>네 단계를 거쳤습니다</h2><p class="sub">물리치료사분들의 안전을 생각했습니다</p>
-<p><br></p><p><br></p><p><br></p></div>
-<ol class="timeline2">
-<li class="done"><b>1. 환자용 도구들</b><span>관절가동범위 측정, 홈 운동 코치 등. 이미 비슷한 앱이 많아 보류</span></li>
-<li class="done"><b>2. 치료사를 지키는 AI</b><span>아무도 보지 않던 치료사의 직업병에 주목</span></li>
-<li class="done"><b>3. 카메라 없이 해보기</b><span>스마트폰 주머니 센서 방식 검토. 흔들림·기기 제약으로 폐기</span></li>
-<li class="done"><b>4. 카메라 방식 확정</b><span>브라우저 안에서만 처리해 개인정보 문제 해결</span></li>
-<li><b>다음: 현장 검증</b><span>[실제 치료사 피드백을 받아 기준을 다듬을 예정]</span></li></ol></div></div></div></section>
-<section class="ws" id="limits"><div class="w"><p class="lab">한계와 계획</p><h2>한계를 알고 있습니다</h2><p class="sub">발전 계획</p><ol class="plain">
-<li>카메라는 각도만 봅니다. 든 무게나 힘은 재지 못하므로 결과는 진단이 아닌 자세 기반 위험 추정입니다.</li>
-<li>두 사람이 보이면 화면에서 치료사를 눌러 지정하도록 했지만, 치료사와 환자가 많이 겹치면 관절을 잘못 인식할 수 있습니다. 옆에서 촬영하면 줄어듭니다.</li>
-<li>손목은 인식 점이 작아 정확도가 낮습니다. 손 전용 인식 모델을 함께 쓰는 방법을 검토 중입니다.</li>
-<li>판정 기준은 실제 치료사의 측정 결과와 비교하는 검증이 필요합니다.</li></ol></div></section>
-<footer class="foot"><div class="w"><div class="two"><div><h2>감사합니다</h2><p class="sub">함께 이야기 나누고 싶습니다</p>
-<dl class="kv contact"><dt>이름</dt><dd>전지윤</dd><dt>이메일</dt><dt>jijiyajiji@icloud.com</dt><dt>학교</dt><dd>안동과학대학교 물리치료학과</dd></dl></div>
-<div><h3 style="margin-top:0">참고문헌</h3><ol class="refs">
-<li>Frequency of work-related musculoskeletal disorders among physical therapists: a systematic review. Rev Bras Med Trab, 2025. DOI: 10.47626/1679-4435-2025-1481</li>
-<li>Vieira ER 외. Work-related musculoskeletal disorders among physical therapists: A systematic review. J Back Musculoskelet Rehabil, 2016;29(3):417-428.</li>
-<li>Milhem M 외. Work-related musculoskeletal disorders among physical therapists: A comprehensive narrative review. Int J Occup Med Environ Health, 2016;29(5).</li>
-<li>Hignett S, McAtamney L. Rapid Entire Body Assessment (REBA). Applied Ergonomics, 2000;31(2):201-205.</li>
-<li>McAtamney L, Corlett EN. RULA. Applied Ergonomics, 1993;24(2):91-99.</li>
-<li>Google MediaPipe Pose Landmarker.</li></ol></div></div></div></footer>
-</main>
-
-
 
 <script type="module">
 const MP_URL="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
