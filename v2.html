@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>세러가드 · 치료사 자세 부담 분석 (개선판)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: light;
+  --bg:#E9EFEE; --surface:#FFFFFF; --ink:#1B2A29; --muted:#5B6E6C; --line:#CBD8D6;
+  --teal:#1F6F68; --teal-ink:#FFFFFF;
+  --ok:#3E9B5F; --warn:#D99A1E; --bad:#C8423A; --none:#9AA9A7;
+  --stage:#10201F;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#0F1A19; --surface:#172625; --ink:#E4EEEC; --muted:#9DB2AF; --line:#2A3D3B;
+    --teal:#3FA79D; --teal-ink:#0F1A19; --stage:#050C0B;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#0F1A19; --surface:#172625; --ink:#E4EEEC; --muted:#9DB2AF; --line:#2A3D3B;
+  --teal:#3FA79D; --teal-ink:#0F1A19; --stage:#050C0B;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+  font-size:16px;line-height:1.6}
+.wrap{max-width:1180px;margin:0 auto;padding:20px 18px 40px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:18px}
+h1{font-size:1.9rem;line-height:1.2;margin:0;font-weight:700;letter-spacing:-0.02em}
+h1 small{display:block;font-size:1rem;font-weight:400;color:var(--muted);letter-spacing:0;margin-top:6px}
+.controls{display:flex;flex-wrap:wrap;gap:8px}
+button,.filebtn{font:inherit;font-weight:500;border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  padding:10px 16px;border-radius:999px;cursor:pointer}
+button.primary{background:var(--teal);color:var(--teal-ink);border-color:var(--teal)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,.filebtn:focus-within{outline:3px solid var(--teal);outline-offset:2px}
+.filebtn input{position:absolute;opacity:0;width:1px;height:1px}
+.filebtn{position:relative;display:inline-block}
+
+.grid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:18px}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+
+.stage{position:relative;background:var(--stage);border-radius:18px;overflow:hidden;aspect-ratio:4/3;
+  display:flex;align-items:center;justify-content:center}
+.stage video,.stage canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.stage.mirror video,.stage.mirror canvas{transform:scaleX(-1)}
+.stage.picking{cursor:crosshair;box-shadow:0 0 0 4px var(--warn) inset}
+.stage{cursor:pointer}
+.placeholder{position:relative;color:#C9D8D5;text-align:center;padding:24px;max-width:420px}
+.placeholder svg{width:120px;height:120px;margin-bottom:12px}
+.alertbar{position:absolute;left:12px;right:12px;top:12px;background:var(--bad);color:#fff;font-weight:700;
+  padding:12px 16px;border-radius:12px;font-size:1.05rem;display:none}
+.alertbar.show{display:block}
+.status{margin-top:10px;color:var(--muted);font-size:.95rem;min-height:1.6em}
+.status.err{color:var(--bad);font-weight:500}
+
+.panel{display:flex;flex-direction:column;gap:12px}
+.part{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;
+  border-left:8px solid var(--none)}
+.part[data-level="0"]{border-left-color:var(--ok)}
+.part[data-level="1"]{border-left-color:var(--warn)}
+.part[data-level="2"]{border-left-color:var(--bad)}
+.part .row{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.part .name{font-weight:700;font-size:1.1rem}
+.part .deg{font-size:2.2rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+.part .deg span{font-size:1rem;font-weight:400;color:var(--muted)}
+.part .lvl{font-size:.95rem;color:var(--muted)}
+.part .rule{font-size:.82rem;color:var(--muted);margin-top:4px}
+
+.timeline{margin-top:18px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.timeline h2,.report h2{font-size:1.1rem;margin:0 0 8px}
+.timeline canvas{width:100%;height:36px;display:block;border-radius:6px;background:var(--bg)}
+.legend{display:flex;gap:14px;font-size:.85rem;color:var(--muted);margin-top:8px;flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:middle}
+
+.report{margin-top:18px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:none}
+.report.show{display:block}
+.score{display:flex;align-items:baseline;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.score b{font-size:3rem;line-height:1;font-variant-numeric:tabular-nums}
+.score span{color:var(--muted)}
+.bars{display:grid;gap:10px;margin-bottom:14px}
+.bar .label{display:flex;justify-content:space-between;font-size:.95rem}
+.bar .track{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--bg)}
+.bar .track div{height:100%}
+.advice{margin:0;padding-left:1.2em}
+.advice li{margin-bottom:6px}
+.note{font-size:.85rem;color:var(--muted);margin-top:14px}
+footer{margin-top:24px;font-size:.85rem;color:var(--muted)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+
+.guide{position:absolute;left:12px;right:12px;bottom:12px;background:rgba(0,0,0,.72);color:#fff;padding:12px 16px;border-radius:10px;font-weight:700;font-size:1.1rem;text-align:center;display:none;z-index:3}
+.guide.show{display:block}
+.guide.ok{background:rgba(62,155,95,.92)}
+.alertbar{z-index:4}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>세러가드<small>환자를 돌보는 치료사의 허리·목·어깨·손목 부담을 실시간으로 봅니다</small></h1>
+    <div class="controls">
+      <button class="primary" id="btnCam">카메라 켜기</button>
+      <label class="filebtn">영상 파일로 분석<input type="file" id="fileIn" accept="video/*"></label>
+      <button id="btnFlip" disabled>카메라 전환</button>
+      <button id="btnPick" disabled>치료사 다시 지정</button>
+      <button id="btnSound">음성 경고 켜짐</button>
+      <button id="btnStop" disabled>측정 끝내고 리포트 보기</button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div>
+      <div class="stage" id="stage">
+        <div class="placeholder" id="ph">
+          <svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round">
+            <circle cx="70" cy="22" r="9"/><path d="M64 32 L40 62 L44 100"/><path d="M40 62 L74 66"/>
+            <path d="M58 44 L84 52 L96 70"/><path d="M44 100 L34 112"/><path d="M74 66 L78 112"/>
+          </svg>
+          <div>치료사의 옆모습이 화면 전체에 들어오도록 카메라를 2~3m 떨어진 곳에 두세요.</div>
+        </div>
+        <video id="video" playsinline muted></video>
+        <canvas id="overlay"></canvas>
+        <div class="alertbar" id="alertbar"></div>
+        <div class="guide" id="guide"></div>
+      </div>
+      <div class="status" id="status">AI 모델 준비 중입니다…</div>
+    </div>
+
+    <div class="panel" id="panel"></div>
+  </div>
+
+  <section class="timeline">
+    <h2>세션 흐름</h2>
+    <canvas id="tl" height="36"></canvas>
+    <div class="legend">
+      <span><i style="background:var(--ok)"></i>안전</span>
+      <span><i style="background:var(--warn)"></i>주의</span>
+      <span><i style="background:var(--bad)"></i>위험</span>
+      <span><i style="background:var(--none)"></i>인식 안 됨</span>
+    </div>
+  </section>
+
+  <section class="report" id="report"></section>
+
+  <footer>
+    판정 기준은 산업현장 인간공학 평가법 REBA·RULA의 각도 구간을 응용했습니다. 카메라는 자세(각도)만 보고 실제 힘의 크기는 측정하지 않으므로, 결과는 진단이 아닌 자세 기반 위험 추정입니다. 영상은 이 기기 안에서만 처리되며 어디에도 전송·저장되지 않습니다.
+  </footer>
+</div>
+
+<script type="module">
+const MP_URL="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
+let PoseLandmarker, FilesetResolver;
+
+const PARTS = [
+  { key:"trunk",    name:"허리 숙임", rule:"20° 미만 안전 · 20~60° 주의 · 60° 초과 위험 (REBA 몸통)", cut:[20,60],
+    msg:"허리를 너무 오래 숙이고 있습니다. 침대 높이를 올리거나 무릎을 굽히세요." },
+  { key:"neck",     name:"목 굽힘",   rule:"20° 미만 안전 · 20~45° 주의 · 45° 초과 위험 (REBA 목 응용)", cut:[20,45],
+    msg:"고개를 오래 숙이고 있습니다. 몸을 환자 쪽으로 가까이 옮기세요." },
+  { key:"shoulder", name:"어깨 들림", rule:"45° 미만 안전 · 45~90° 주의 · 90° 초과 위험 (REBA 위팔)", cut:[45,90],
+    msg:"팔을 너무 높이 들고 있습니다. 환자를 몸 가까이 두세요." },
+  { key:"wrist",    name:"손목 꺾임", rule:"15° 미만 안전 · 15~30° 주의 · 30° 초과 위험 (RULA 손목 응용)", cut:[15,30],
+    msg:"손목이 많이 꺾여 있습니다. 손바닥 아래쪽과 체중을 이용해 누르세요." }
+];
+const LV_TXT = ["안전","주의","위험"];
+const ADVICE = {
+  trunk:"치료 침대를 치료사 골반 높이 가까이 올리고, 허리 대신 무릎과 고관절을 굽혀 높이를 맞추세요.",
+  neck:"시선만 내리지 말고 발을 옮겨 몸 전체를 환자 쪽으로 가져가세요.",
+  shoulder:"팔을 어깨 위로 들어 올리는 동작은 환자 위치를 바꾸거나 발판을 써서 줄이세요.",
+  wrist:"손목을 꺾어 누르기보다 팔을 곧게 펴고 몸무게를 실어 누르세요. 손 대신 팔꿈치·주먹 사용도 고려하세요."
+};
+
+const $ = id => document.getElementById(id);
+const video=$("video"), canvas=$("overlay"), ctx=canvas.getContext("2d");
+const stage=$("stage"), statusEl=$("status");
+
+// 패널 생성
+$("panel").innerHTML = PARTS.map(p=>`
+  <div class="part" id="p-${p.key}" data-level="-1">
+    <div class="row"><span class="name">${p.name}</span><span class="lvl" id="l-${p.key}">대기</span></div>
+    <div class="deg" id="d-${p.key}">–<span>°</span></div>
+    <div class="rule">${p.rule}</div>
+  </div>`).join("");
+
+let pendingKind=null, okSince=0;
+let landmarker=null, running=false, source=null, facing="user", soundOn=true;
+let stream=null, lastTs=0, lastSample=0;
+const smooth={}, redSince={}, lastAlert={};
+let stats, samples;
+function resetStats(){
+  stats={}; PARTS.forEach(p=>{stats[p.key]={t:[0,0,0],none:0,longest:0,cur:0,alerts:0}});
+  samples=[]; lastSample=0;
+  PARTS.forEach(p=>{smooth[p.key]=null;redSince[p.key]=null;lastAlert[p.key]=0;
+    if(typeof rawBuf!=="undefined"){rawBuf[p.key]=[];lastSeen[p.key]=null;curLv[p.key]=null}});
+}
+resetStats();
+
+function setStatus(t,err=false){statusEl.textContent=t;statusEl.classList.toggle("err",err)}
+
+async function loadModel(){
+  try{
+    const mp = await import(MP_URL); PoseLandmarker=mp.PoseLandmarker; FilesetResolver=mp.FilesetResolver;
+    const vision = await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm");
+    // 정확도가 높은 full 모델을 먼저 쓰고, 안 되면 가벼운 lite 모델로
+    const MODELS=["https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_full/float16/1/pose_landmarker_full.task",
+                  "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
+                  "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/latest/pose_landmarker_lite.task"];
+    // 사물을 사람으로 착각하지 않도록 확신도 기준을 0.5 → 0.65로 올림
+    const opts = (m,d) => ({ baseOptions:{ modelAssetPath:m, delegate:d }, runningMode:"VIDEO", numPoses:2,
+      minPoseDetectionConfidence:0.65, minPosePresenceConfidence:0.65, minTrackingConfidence:0.6 });
+    let lastErr=null;
+    for(const m of MODELS){
+      for(const d of ["GPU","CPU"]){
+        try{ landmarker = await PoseLandmarker.createFromOptions(vision, opts(m,d)); break; }catch(e){ lastErr=e; }
+      }
+      if(landmarker) break;
+    }
+    if(!landmarker) throw lastErr;
+    setStatus("준비 완료. 카메라를 켜거나 치료 장면 영상을 올리세요.");
+    if(pendingKind){ const k=pendingKind; pendingKind=null; begin(k); }
+  }catch(e){
+    console.error(e);
+    setStatus("AI 모델을 불러오지 못했습니다. 인터넷에 연결된 상태에서 크롬으로 이 파일을 다시 여세요.", true);
+  }
+}
+loadModel();
+
+// ---------- 각도 계산 ----------
+function P(l){return {x:l.x*canvas.width, y:l.y*canvas.height, v:l.visibility??1}}
+function sub(a,b){return {x:a.x-b.x,y:a.y-b.y}}
+function mid(a,b){return {x:(a.x+b.x)/2,y:(a.y+b.y)/2,v:Math.min(a.v,b.v)}}
+function ang(u,v){const d=u.x*v.x+u.y*v.y, m=Math.hypot(u.x,u.y)*Math.hypot(v.x,v.y); if(!m)return null;
+  return Math.acos(Math.max(-1,Math.min(1,d/m)))*180/Math.PI}
+
+function analyze(lm){
+  const L=i=>P(lm[i]);
+  const visL=[11,13,15,23].reduce((s,i)=>s+(lm[i].visibility??0),0);
+  const visR=[12,14,16,24].reduce((s,i)=>s+(lm[i].visibility??0),0);
+  const side = visL>=visR ? {ear:7,sh:11,el:13,wr:15,ix:19,hip:23} : {ear:8,sh:12,el:14,wr:16,ix:20,hip:24};
+  const sh=L(side.sh), el=L(side.el), wr=L(side.wr), ix=L(side.ix), ear=L(side.ear), hip=L(side.hip);
+  const TH=0.55, ok=(...a)=>a.every(q=>q&&q.v>TH);
+  const both=(a,b)=>(L(a).v>TH&&L(b).v>TH)?mid(L(a),L(b)):(L(a).v>=L(b).v?L(a):L(b));
+  const shM=both(11,12), hipM=both(23,24);
+  const trunkVec=sub(shM,hipM);
+  const r={
+    trunk: ok(shM,hipM) ? ang(trunkVec,{x:0,y:-1}) : null,
+    neck:  ok(ear,sh,hipM) ? ang(sub(ear,sh),trunkVec) : null,
+    shoulder: ok(sh,el,hip) ? ang(sub(el,sh),sub(hip,sh)) : null,
+    wrist: ok(el,wr,ix) ? ang(sub(wr,el),sub(ix,wr)) : null
+  };
+  return {r,pts:{shM,hipM,sh,el,wr,ix,ear,hip,lm:L}};
+}
+
+// ---------- 치료사 고르기 ----------
+let target=null, tapPoint=null, twoNoticed=false;
+function centerOf(lm){const ids=[11,12,23,24];return {x:ids.reduce((a,i)=>a+lm[i].x,0)/4,y:ids.reduce((a,i)=>a+lm[i].y,0)/4}}
+function feetY(lm){const f=[27,28,31,32].filter(i=>(lm[i].visibility??0)>0.3).map(i=>lm[i].y);
+  return f.length?Math.max(...f):Math.max(lm[23].y,lm[24].y)}
+const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+function nearest(list,pt){let k=0; list.forEach((lm,i)=>{ if(dist(centerOf(lm),pt)<dist(centerOf(list[k]),pt)) k=i }); return k}
+// 손으로 지정: 두 사람이 보이면 치료사를 누를 때까지 분석하지 않음 (-1 반환)
+function pickTherapist(list){
+  if(tapPoint){
+    const idx=nearest(list,tapPoint); tapPoint=null; stage.classList.remove("picking");
+    target=centerOf(list[idx]);
+    setStatus("치료사를 지정했습니다. 이제 이 사람만 따라가며 분석합니다. 바꾸려면 ‘치료사 다시 지정’을 누르세요.");
+    return idx;
+  }
+  if(stage.classList.contains("picking")) return -1;
+  if(target){ const idx=nearest(list,target); target=centerOf(list[idx]); return idx; }
+  if(list.length===1){ target=centerOf(list[0]); return 0; }
+  if(!twoNoticed){ twoNoticed=true; stage.classList.add("picking");
+    setStatus("두 사람이 보입니다. 화면에서 치료사를 한 번 눌러 주세요. 누르기 전에는 측정하지 않습니다."); }
+  return -1;
+}
+function stagePoint(ev){
+  const r=stage.getBoundingClientRect(), vw=video.videoWidth, vh=video.videoHeight; if(!vw) return null;
+  const sc=Math.min(r.width/vw,r.height/vh), dw=vw*sc, dh=vh*sc, ox=(r.width-dw)/2, oy=(r.height-dh)/2;
+  let x=(ev.clientX-r.left-ox)/dw, y=(ev.clientY-r.top-oy)/dh;
+  if(stage.classList.contains("mirror")) x=1-x;
+  return (x<0||x>1||y<0||y>1)?null:{x,y};
+}
+stage.addEventListener("click",ev=>{ if(!running) return; const p=stagePoint(ev); if(p){ tapPoint=p; target=null; } });
+
+// ---------- 그리기 ----------
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+let colCache=null; const darkMQ=matchMedia("(prefers-color-scheme: dark)"); darkMQ.addEventListener?.("change",()=>colCache=null);
+function colorOf(lv){ if(!colCache) colCache={0:css("--ok"),1:css("--warn"),2:css("--bad"),"-1":css("--none")}; return colCache[lv]??colCache["-1"] }
+function seg(a,b,c,w){ if(!a||!b)return; ctx.strokeStyle=c; ctx.lineWidth=w; ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke() }
+function dot(a,c,r){ctx.fillStyle=c;ctx.beginPath();ctx.arc(a.x,a.y,r,0,Math.PI*2);ctx.fill()}
+
+function drawOther(lm,txt){
+  const L=i=>P(lm[i]), w=Math.max(3,canvas.width/200), c="rgba(200,210,208,.45)";
+  [[11,12],[11,23],[12,24],[23,24],[11,13],[13,15],[12,14],[14,16],[23,25],[25,27],[24,26],[26,28]].forEach(([a,b])=>seg(L(a),L(b),c,w));
+  label(L(0),txt||"다른 사람","rgba(60,70,70,.85)");
+}
+function label(p,t,bg){
+  const fs=Math.max(14,canvas.width/45); ctx.save(); ctx.font="700 "+fs+"px Noto Sans KR, sans-serif";
+  const tw=ctx.measureText(t).width, x=p.x, y=Math.max(fs*1.6,p.y-fs*1.4);
+  if(stage.classList.contains("mirror")){ ctx.translate(x,0); ctx.scale(-1,1); ctx.translate(-x,0); }
+  ctx.fillStyle=bg; ctx.fillRect(x-tw/2-8,y-fs,tw+16,fs*1.4); ctx.fillStyle="#fff"; ctx.textAlign="center"; ctx.fillText(t,x,y);
+  ctx.restore();
+}
+function draw(pts,lv){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const w=Math.max(4,canvas.width/120), L=pts.lm, gray="rgba(220,230,228,.55)";
+  [[23,25],[25,27],[24,26],[26,28],[23,24],[11,12]].forEach(([a,b])=>seg(L(a),L(b),gray,w*.7));
+  seg(pts.hipM,pts.shM,colorOf(lv.trunk),w*1.6);
+  seg(pts.sh,pts.ear,colorOf(lv.neck),w*1.3);
+  seg(pts.sh,pts.el,colorOf(lv.shoulder),w*1.3);
+  seg(pts.el,pts.wr,colorOf(lv.wrist),w);
+  seg(pts.wr,pts.ix,colorOf(lv.wrist),w);
+  [pts.hipM,pts.shM,pts.sh,pts.el,pts.wr,pts.ear].forEach(p=>dot(p,"#fff",w*.8));
+}
+
+// ---------- 위치 안내 ----------
+function positionCheck(lm){
+  if(!lm) return {ok:false,msg:"사람이 보이지 않습니다. 카메라 앞에 서 주세요."};
+  const v=i=>lm[i].visibility??0;
+  const shoulder=v(11)>0.4||v(12)>0.4, hip=v(23)>0.4||v(24)>0.4;
+  if(!shoulder) return {ok:false,msg:"어깨가 보이도록 카메라 쪽으로 몸을 돌려 주세요."};
+  if(!hip) return {ok:false,msg:"측정 중입니다. 골반까지 보이면 허리 각도도 잴 수 있어요."};
+  return {ok:true,msg:"측정 중입니다. 옆모습이 보일수록 허리 각도가 정확해요."};
+}
+function showGuide(r){
+  const g=$("guide"); g.textContent=r.msg; g.classList.toggle("ok",r.ok);
+  const now=performance.now();
+  if(r.ok){ if(!okSince) okSince=now; g.classList.toggle("show", now-okSince<3000); }
+  else { okSince=0; g.classList.add("show"); }
+}
+function drawFrameGuide(){
+  const W=canvas.width,H=canvas.height; if(!W)return;
+  ctx.save(); ctx.setLineDash([W/60,W/80]); ctx.lineWidth=Math.max(3,W/250); ctx.strokeStyle="rgba(255,255,255,.6)";
+  const bw=W*0.5,bh=H*0.85; ctx.strokeRect((W-bw)/2,(H-bh)/2,bw,bh); ctx.restore();
+  label({x:W/2,y:(H-bh)/2+W/14},"카메라 앞에 서 주세요","rgba(0,0,0,.55)");
+}
+function guideOnlyLoop(){
+  if(!pendingKind) return;
+  if(video.readyState>=2){ if(canvas.width!==video.videoWidth){canvas.width=video.videoWidth;canvas.height=video.videoHeight}
+    ctx.clearRect(0,0,canvas.width,canvas.height); drawFrameGuide(); }
+  requestAnimationFrame(guideOnlyLoop);
+}
+
+// ---------- 루프 ----------
+const HOLD=3000, COOL=8000;
+const DETECT_MS=66;      // AI 분석은 1초에 약 15번만 (렉 줄이기)
+const MED_N=7;           // 최근 7번 값의 가운데 값 사용 (튀는 값 제거)
+const ALPHA=0.25;        // 부드럽게 따라가는 정도 (작을수록 덜 흔들림)
+const MAX_STEP=12;       // 한 번에 최대 12°까지만 변하도록 제한
+const HYST=4;            // 등급 경계에서 4° 여유 (안전↔주의 깜빡임 방지)
+const KEEP_MS=700;       // 0.7초 이내로 잠깐 놓치면 직전 값 유지
+var rawBuf={}, lastSeen={}, curLv={};
+
+// ---- 소리: 첫 버튼 클릭 때 미리 깨워 둠 (브라우저는 클릭 전 소리를 막음) ----
+let ac=null, koVoice=null;
+function unlockSound(){
+  try{ if(!ac) ac=new (window.AudioContext||window.webkitAudioContext)(); if(ac.state==="suspended") ac.resume(); }catch(e){}
+  if("speechSynthesis" in window){
+    const pick=()=>{ koVoice=speechSynthesis.getVoices().find(v=>/^ko/i.test(v.lang))||null };
+    pick(); speechSynthesis.onvoiceschanged=pick;
+    const u=new SpeechSynthesisUtterance(" "); u.volume=0; speechSynthesis.speak(u);
+  }
+}
+function beep(){
+  if(!ac) return;
+  const t=ac.currentTime;
+  [0,0.3].forEach(d=>{ const o=ac.createOscillator(), g=ac.createGain();
+    o.type="square"; o.frequency.value=1000; g.gain.setValueAtTime(0.0001,t+d);
+    g.gain.exponentialRampToValueAtTime(0.5,t+d+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t+d+0.22);
+    o.connect(g); g.connect(ac.destination); o.start(t+d); o.stop(t+d+0.25); });
+}
+function speak(t){
+  if(!soundOn)return;
+  try{ if(ac&&ac.state==="suspended") ac.resume(); beep(); }catch(e){}
+  if("speechSynthesis" in window){
+    speechSynthesis.cancel();
+    setTimeout(()=>{ const u=new SpeechSynthesisUtterance(t); u.lang="ko-KR"; if(koVoice) u.voice=koVoice;
+      u.volume=1; u.rate=1.05; speechSynthesis.speak(u); },700);
+  }
+}
+function showAlert(t){const a=$("alertbar"); a.textContent=t; a.classList.add("show"); clearTimeout(showAlert._t); showAlert._t=setTimeout(()=>a.classList.remove("show"),4000)}
+
+// ---- 사람인지 확인: 어깨·골반이 사람 몸 비율인지 검사 (의자·옷걸이 등 걸러내기) ----
+function isHuman(lm){
+  const v=i=>lm[i].visibility??0;
+  const hipOK=v(23)>0.5||v(24)>0.5, headOK=v(0)>0.5||v(7)>0.5||v(8)>0.5;
+  if(!(v(11)>0.5||v(12)>0.5)||!hipOK||!headOK) return false;
+  const sh={x:(lm[11].x+lm[12].x)/2,y:(lm[11].y+lm[12].y)/2}, hp={x:(lm[23].x+lm[24].x)/2,y:(lm[23].y+lm[24].y)/2};
+  const torso=Math.hypot(sh.x-hp.x,sh.y-hp.y);
+  if(torso<0.08) return false;                       // 너무 작음 = 멀리 있는 사물일 가능성
+  const nose=lm[0], headDist=Math.hypot(nose.x-sh.x,nose.y-sh.y);
+  if(headDist>torso*1.3) return false;               // 머리가 몸통보다 지나치게 멀면 사람 아님
+  return true;
+}
+
+// ---- 각도 안정화: 가운데 값 → 부드럽게 → 변화량 제한 ----
+function stabilize(key,raw,now){
+  const b=rawBuf[key]||(rawBuf[key]=[]); b.push(raw); if(b.length>MED_N) b.shift();
+  const med=[...b].sort((x,y)=>x-y)[Math.floor(b.length/2)];
+  const prev=smooth[key];
+  if(prev==null){ smooth[key]=med; }
+  else{ let d=(med-prev)*ALPHA; d=Math.max(-MAX_STEP,Math.min(MAX_STEP,d)); smooth[key]=prev+d; }
+  lastSeen[key]=now;
+}
+function holdOrClear(key,now){
+  if(lastSeen[key]==null || now-lastSeen[key]>KEEP_MS){ smooth[key]=null; rawBuf[key]=[]; }
+}
+// 등급에 여유폭을 둬서 경계에서 깜빡이지 않게
+function level(p,deg,key){
+  if(deg==null){ curLv[key]=-1; return -1; }
+  const raw=deg<p.cut[0]?0:deg<p.cut[1]?1:2, cur=curLv[key];
+  if(cur==null||cur<0||raw===cur){ curLv[key]=raw; return raw; }
+  const edge = raw>cur ? p.cut[raw-1]+HYST : p.cut[cur-1]-HYST;   // 올라갈 땐 +4°, 내려갈 땐 -4° 넘어야 변경
+  const pass = raw>cur ? deg>=edge : deg<=edge;
+  if(pass) curLv[key]=raw;
+  return curLv[key];
+}
+
+function updatePanel(lv,now,dt){
+  PARTS.forEach(p=>{
+    const l=lv[p.key], s=stats[p.key], el=$("p-"+p.key);
+    if(el.dataset.level!=String(l)) el.dataset.level=l;
+    const txt=(smooth[p.key]==null?"–":Math.round(smooth[p.key]))+"<span>°</span>";
+    const d=$("d-"+p.key); if(d.innerHTML!==txt) d.innerHTML=txt;
+    $("l-"+p.key).textContent=l<0?"인식 안 됨":LV_TXT[l];
+    if(l<0) s.none+=dt; else s.t[l]+=dt;
+    if(l===2){ s.cur+=dt; s.longest=Math.max(s.longest,s.cur);
+      if(redSince[p.key]==null) redSince[p.key]=now;
+      if(now-redSince[p.key]>HOLD && now-lastAlert[p.key]>COOL){ lastAlert[p.key]=now; s.alerts++; showAlert(p.name+" 위험: "+p.msg); speak(p.msg) }
+    }else{ s.cur=0; redSince[p.key]=null }
+  });
+  if(now-lastSample>500){ lastSample=now; samples.push(Math.max(...PARTS.map(p=>lv[p.key]))); drawTimeline() }
+}
+
+let lastDetect=0;
+function loop(){
+  if(!running)return;
+  const now=performance.now();
+  if(video.readyState>=2 && landmarker && now-lastDetect>=DETECT_MS){
+    lastDetect=now;
+    if(canvas.width!==video.videoWidth){canvas.width=video.videoWidth;canvas.height=video.videoHeight}
+    const dt=lastTs?Math.min((now-lastTs)/1000,0.5):0; lastTs=now;
+    const res=landmarker.detectForVideo(video,now);
+    const lv={};
+    if(res.landmarks && res.landmarks.length){
+      // 흐릿하게 잡힌 것·사람 몸 비율이 아닌 것·같은 사람이 두 번 잡힌 것 걸러내기
+      const q=lm=>[0,11,12,23,24].reduce((a,i)=>a+(lm[i].visibility??0),0)/5;
+      let list=res.landmarks.filter(lm=>q(lm)>0.5 && isHuman(lm)).sort((a,b)=>q(b)-q(a));
+      list=list.filter((lm,i)=>list.slice(0,i).every(o=>dist(centerOf(o),centerOf(lm))>0.12));
+      if(!list.length){
+        ctx.clearRect(0,0,canvas.width,canvas.height); drawFrameGuide(); showGuide(positionCheck(null));
+        PARTS.forEach(p=>{ holdOrClear(p.key,now); lv[p.key]=level(p,smooth[p.key],p.key); });
+        updatePanel(lv,now,dt); requestAnimationFrame(loop); return;
+      }
+      res.landmarks=list;
+      const ti=pickTherapist(res.landmarks);
+      if(ti<0){
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        res.landmarks.forEach(o=>drawOther(o,"누르면 치료사로 지정"));
+        showGuide({ok:false,msg:"치료사를 화면에서 한 번 눌러 주세요."});
+        PARTS.forEach(p=>{ $("p-"+p.key).dataset.level=-1; $("l-"+p.key).textContent="치료사 지정 대기"; });
+        requestAnimationFrame(loop); return;
+      }
+      const pc=positionCheck(res.landmarks[ti]); showGuide(pc);
+      const {r,pts}=analyze(res.landmarks[ti]);
+      PARTS.forEach(p=>{
+        if(r[p.key]!=null) stabilize(p.key,r[p.key],now); else holdOrClear(p.key,now);
+        lv[p.key]=level(p,smooth[p.key],p.key);
+      });
+      draw(pts,lv);
+      res.landmarks.forEach((o,i)=>{ if(i!==ti) drawOther(o) });
+      label(P(res.landmarks[ti][0]),"치료사","rgba(31,111,104,.92)");
+    }else{
+      ctx.clearRect(0,0,canvas.width,canvas.height); drawFrameGuide(); showGuide(positionCheck(null));
+      PARTS.forEach(p=>{ holdOrClear(p.key,now); lv[p.key]=level(p,smooth[p.key],p.key); });
+    }
+    updatePanel(lv,now,dt);
+  }
+  requestAnimationFrame(loop);
+}
+
+function drawTimeline(){
+  const c=$("tl"), g=c.getContext("2d"), W=c.clientWidth*devicePixelRatio, H=36*devicePixelRatio;
+  c.width=W; c.height=H; g.clearRect(0,0,W,H);
+  const n=Math.max(samples.length,120), bw=W/n;
+  samples.forEach((v,i)=>{ g.fillStyle=colorOf(v); g.fillRect(i*bw,0,Math.ceil(bw),H) });
+}
+
+// ---------- 시작/정지 ----------
+function cameraHelp(e){
+  let inFrame=false; try{ inFrame = window.self!==window.top }catch(x){ inFrame=true }
+  if(inFrame) return "지금은 다른 화면(미리보기 창 등) 안에서 열려 있어 카메라가 막혀 있습니다. 파일을 내려받아 크롬으로 직접 열거나, 웹사이트 주소로 열어 주세요.";
+  if(!window.isSecureContext || !navigator.mediaDevices) return "이 방식으로 연 화면에서는 카메라를 쓸 수 없습니다. 웹사이트 주소(https://로 시작)로 열어 주세요.";
+  const n=e&&e.name;
+  if(n==="NotSupportedError"||n==="Insecure") return "이 방식으로 연 화면에서는 카메라를 쓸 수 없습니다. 웹사이트 주소(https://로 시작)로 열어 주세요.";
+  if(n==="NotAllowedError"||n==="SecurityError") return "카메라 사용이 막혀 있습니다. 주소창 왼쪽 아이콘을 눌러 카메라를 ‘허용’으로 바꾼 뒤 새로고침하세요.";
+  if(n==="NotFoundError"||n==="OverconstrainedError") return "연결된 카메라를 찾지 못했습니다. 카메라가 있는 기기에서 열거나, ‘영상 파일로 분석’을 이용하세요.";
+  if(n==="NotSupportedError"||n==="Insecure") return "이 방식으로 연 화면에서는 카메라를 쓸 수 없습니다. 웹사이트 주소(https://로 시작)로 열거나, 내려받은 파일을 크롬으로 직접 열어 주세요.";
+  if(n==="NotReadableError"||n==="AbortError") return "다른 프로그램(줌, 카톡 영상통화 등)이 카메라를 쓰고 있습니다. 그 프로그램을 끄고 다시 누르세요.";
+  return "카메라를 켤 수 없습니다. ("+(n||"알 수 없는 오류")+") 화면을 캡처해 보내 주세요.";
+}
+async function startCamera(){
+  stopSource();
+  try{
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia) throw {name:"Insecure"};
+    try{ stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing,width:{ideal:640},height:{ideal:480}},audio:false}); }
+    catch(e1){ if(e1&&e1.name==="NotAllowedError") throw e1; stream=await navigator.mediaDevices.getUserMedia({video:true,audio:false}); }
+    video.removeAttribute("src"); video.loop=false; video.srcObject=stream; await video.play();
+    stage.classList.toggle("mirror",facing==="user");
+    begin("카메라");
+  }catch(e){
+    console.error(e);
+    setStatus(cameraHelp(e), true);
+  }
+}
+function startFile(f){
+  stopSource();
+  video.srcObject=null; video.src=URL.createObjectURL(f); video.loop=true;
+  stage.classList.remove("mirror");
+  video.play().then(()=>begin("영상 파일")).catch(()=>setStatus("이 영상 형식은 재생할 수 없습니다. MP4 파일로 다시 시도하세요.",true));
+}
+function begin(kind){
+  $("ph").style.display="none"; $("report").classList.remove("show");
+  if(!landmarker){
+    pendingKind=kind; $("btnStop").disabled=true; $("btnFlip").disabled=(kind!=="카메라"); $("btnPick").disabled=false;
+    setStatus("화면이 켜졌습니다. AI를 준비하는 동안 몸 전체가 나오게 위치를 맞추세요. 준비되면 자동으로 분석을 시작합니다.");
+    showGuide({ok:false,msg:"AI 준비 중… 먼저 몸 전체가 화면에 나오게 서 주세요."});
+    guideOnlyLoop(); return;
+  }
+  resetStats(); running=true; lastTs=0; source=kind; target=null; tapPoint=null; twoNoticed=false;
+  $("btnStop").disabled=false; $("btnFlip").disabled=(kind!=="카메라"); $("btnPick").disabled=false;
+  setStatus(kind+" 분석 중입니다. 색이 빨강으로 3초 넘게 유지되면 경고가 울립니다.");
+  requestAnimationFrame(loop);
+}
+function stopSource(){
+  running=false; pendingKind=null; okSince=0; const g=$("guide"); if(g) g.classList.remove("show");
+  if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}
+  video.pause();
+}
+
+function finish(){
+  stopSource(); $("btnStop").disabled=true; $("btnFlip").disabled=true; $("btnPick").disabled=true;
+  const rows=PARTS.map(p=>{const s=stats[p.key], tot=s.t[0]+s.t[1]+s.t[2];
+    const pc=tot?s.t.map(x=>x/tot*100):[0,0,0]; return {p,s,tot,pc}});
+  const measured=rows.filter(r=>r.tot>0);
+  if(!measured.length){setStatus("측정된 자세가 없습니다. 치료사 몸 전체가 화면에 들어오게 하고 다시 시작하세요.",true);return}
+  const score=Math.round(measured.reduce((a,r)=>a+(r.pc[1]*0.5+r.pc[2]),0)/measured.length);
+  const worst=[...measured].sort((a,b)=>b.pc[2]-a.pc[2]||b.pc[1]-a.pc[1]);
+  const totalTime=Math.max(...rows.map(r=>r.tot+r.s.none));
+  const fmt=s=>s<60?Math.round(s)+"초":Math.floor(s/60)+"분 "+Math.round(s%60)+"초";
+  const advice=worst.filter(r=>r.pc[1]+r.pc[2]>10).slice(0,3).map(r=>`<li><b>${r.p.name}</b>: ${ADVICE[r.p.key]}</li>`).join("")
+    || "<li>이번 세션에서는 눈에 띄는 위험 자세가 거의 없었습니다. 지금 자세 습관을 유지하세요.</li>";
+  $("report").innerHTML=`
+    <h2>세션 리포트</h2>
+    <div class="score"><b>${score}</b><span>/ 100 신체 부담 지수 (낮을수록 좋음) · 측정 시간 ${fmt(totalTime)}</span></div>
+    <div class="bars">${rows.map(r=>`
+      <div class="bar">
+        <div class="label"><span>${r.p.name}</span><span>위험 ${Math.round(r.pc[2])}% · 최장 위험 지속 ${fmt(r.s.longest)} · 경고 ${r.s.alerts}회</span></div>
+        <div class="track"><div style="width:${r.pc[0]}%;background:var(--ok)"></div><div style="width:${r.pc[1]}%;background:var(--warn)"></div><div style="width:${r.pc[2]}%;background:var(--bad)"></div></div>
+      </div>`).join("")}</div>
+    <h2>개선 제안</h2>
+    <ul class="advice">${advice}</ul>
+    <p class="note">신체 부담 지수는 이 프로그램이 정한 값입니다(주의 시간 절반 + 위험 시간 전체의 부위 평균 비율). 공식 REBA 점수가 아니며, 하중·반복 횟수는 반영하지 않았습니다.</p>`;
+  $("report").classList.add("show");
+  $("report").scrollIntoView({behavior:"smooth"});
+  setStatus("측정을 마쳤습니다. 아래 리포트를 확인하세요.");
+}
+
+$("btnCam").onclick=()=>{unlockSound(); startCamera()};
+document.addEventListener("pointerdown",unlockSound,{once:true});
+$("fileIn").onchange=e=>{unlockSound(); const f=e.target.files[0]; if(f) startFile(f); e.target.value=""};
+$("btnFlip").onclick=()=>{facing=facing==="user"?"environment":"user"; startCamera()};
+$("btnSound").onclick=()=>{unlockSound(); soundOn=!soundOn; $("btnSound").textContent=soundOn?"음성 경고 켜짐":"음성 경고 꺼짐"; if(soundOn) speak("음성 경고가 켜졌습니다.")};
+$("btnStop").onclick=finish;
+$("btnPick").onclick=()=>{ target=null; stage.classList.add("picking"); setStatus("화면에서 치료사를 한 번 눌러 주세요."); };
+window.addEventListener("resize",()=>samples&&drawTimeline());
+</script>
+</body>
+</html>
